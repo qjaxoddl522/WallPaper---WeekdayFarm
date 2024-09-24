@@ -44,5 +44,8 @@ TagManager:
   - name: Minimi
     uniqueID: 1055960119
     locked: 0
+  - name: UI
+    uniqueID: 3674320821
+    locked: 0
   m_RenderingLayers:
   - Default

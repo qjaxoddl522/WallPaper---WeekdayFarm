@@ -47,7 +47,7 @@ public class MoveTargetState : FSMBase
     }
     public override void ExitState()
     {
-        Debug.Log("µµÂø");
+        // Debug.Log("µµÂø");
     }
     public override void UpdateState() { }
 }
@@ -118,6 +118,8 @@ public class Minimi_Control : MonoBehaviour
 
     void Start()
     {
+        transform.rotation = Quaternion.identity;
+
         agent.autoRepath = false;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -131,7 +133,7 @@ public class Minimi_Control : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(0))
         {
-            ChangeRandomAnim();
+            //ChangeRandomAnim();
             //mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             //agent.SetDestination(mousePos);
         }

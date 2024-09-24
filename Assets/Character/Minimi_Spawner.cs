@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
+using Spine;
 
 public class Minimi_Spawner : MonoBehaviour
 {
-    public string[] minimiNames;          // 생성할 사도 이름들
+    public List<string> minimiNames;      // 생성할 사도 이름들
     public string[] exceptAnimationNames; // 제외할 애니메이션
     public GameObject minimiPrefab;
     public GameObject minimiSpawnPointParent;
@@ -22,9 +22,9 @@ public class Minimi_Spawner : MonoBehaviour
     void Start()
     {
         // 애니메이션 이름 목록 불러오기
-        skAnim_Reading = GetComponent<SkeletonAnimation>();
+        skAnim_Reading = SystemManager.Instance.GetComponent<SkeletonAnimation>();
         animationNames = new List<string>();
-        Spine.SkeletonData skeletonData = skAnim_Reading.Skeleton.Data;
+        SkeletonData skeletonData = skAnim_Reading.Skeleton.Data;
         foreach (var animation in skeletonData.Animations)
         {
             if (!exceptAnimationNames.Any(except => animation.Name.ToLower().Contains(except.ToLower())))
