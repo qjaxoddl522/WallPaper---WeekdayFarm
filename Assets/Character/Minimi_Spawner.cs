@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
 using Spine;
+using Unity.VisualScripting;
 
 public class Minimi_Spawner : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class Minimi_Spawner : MonoBehaviour
 
     void Start()
     {
-        // 애니메이션 이름 목록 불러오기
+        // 애니메이션 설정
         skAnim_Reading = SystemManager.Instance.GetComponent<SkeletonAnimation>();
         animationNames = new List<string>();
         SkeletonData skeletonData = skAnim_Reading.Skeleton.Data;
@@ -46,6 +47,13 @@ public class Minimi_Spawner : MonoBehaviour
         }
 
         // 사도 생성
+        List<string> skins = SystemManager.Instance.settings.selectedSkins.ToList();
+        List<string> shuffledSkins = skins.OrderBy(s => Random.value).ToList();
+        int minimiNum = SystemManager.Instance.settings.minimiNum;
+        foreach (string skin in shuffledSkins.Take(minimiNum).ToList())
+        {
+            minimiNames.Add(skin);
+        }
         foreach (string name in minimiNames)
         {
             Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];

@@ -1360,8 +1360,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 325c73b2837efbc4dab0f4af586334bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settings:
+    minimiNum: 1
   settingWindowPrefab: {fileID: 103811102285276024, guid: bbbfec3b4f676e743aef29b4bc88160f, type: 3}
   canvas: {fileID: 63881769}
+  settingWindow: {fileID: 0}
+  skAnim_Reading: {fileID: 0}
 --- !u!1 &1889437976
 GameObject:
   m_ObjectHideFlags: 0
