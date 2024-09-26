@@ -100,15 +100,17 @@ public class SystemManager : MonoBehaviour
         settingWindow = Instantiate(settingWindowPrefab, canvas);
     }
 
-    void Update()
+    public void SettingWindowOn()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!settingWindow.activeSelf)
         {
-            if (!settingWindow.activeSelf)
-            {
-                PlayerPrefs.DeleteAll();
-                settingWindow.SetActive(true);
-            }
+            settingWindow.SetActive(true);
         }
+    }
+
+    public void SettingWindowOff()
+    {
+        settings.SaveSettings();
+        settingWindow.SetActive(false);
     }
 }

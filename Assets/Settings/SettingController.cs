@@ -63,8 +63,7 @@ public class SettingController : MonoBehaviour
 
     public void OnClickClose()
     {
-        sys.settings.SaveSettings();
-        gameObject.SetActive(false);
+        sys.SettingWindowOff();
     }
 
     public void ToggleAllOn()
