@@ -23,7 +23,7 @@ public class SettingController : MonoBehaviour
         InitSettings();
     }
 
-    void InitSettings()
+    public void InitSettings()
     {
         minimiNumSlider.value = sys.settings.minimiNum;
         toggles = new List<Toggle>();
@@ -61,9 +61,9 @@ public class SettingController : MonoBehaviour
         minimiNumText.text = $"등장 사도 수: {(int)minimiNumSlider.value}";
     }
 
-    public void OnClickClose()
+    public void OnClickClose(bool isSave)
     {
-        sys.SettingWindowOff();
+        sys.SettingWindowOff(isSave);
     }
 
     public void ToggleAllOn()

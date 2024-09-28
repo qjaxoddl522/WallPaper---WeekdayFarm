@@ -3,6 +3,8 @@ using Spine;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class StringListWrapper
 {
@@ -97,6 +99,7 @@ public class SystemManager : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         settingWindow = Instantiate(settingWindowPrefab, canvas);
     }
 
@@ -108,9 +111,19 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public void SettingWindowOff()
+    public void SettingWindowOff(bool isSave)
     {
-        settings.SaveSettings();
-        settingWindow.SetActive(false);
+        if (isSave)
+        {
+            settings.SaveSettings();
+            DOTween.KillAll();
+            SceneManager.LoadScene("Loading");
+        }
+        else
+        {
+            Destroy(settingWindow);
+            settings.LoadSettings();
+            settingWindow = Instantiate(settingWindowPrefab, canvas);
+        }
     }
 }

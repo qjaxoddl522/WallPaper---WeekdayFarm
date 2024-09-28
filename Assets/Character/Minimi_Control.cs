@@ -23,7 +23,7 @@ public class IdleState : FSMBase
 
     public override void EnterState()
     {
-        minimi.remainUpdateTime = Random.Range(minimi.updateIntervalLeft, minimi.updateIntervalRight);
+        minimi.remainUpdateTime = Random.Range(minimi.updateIntervalMin, minimi.updateIntervalMax);
     }
     public override void ExitState() { }
     public override void UpdateState()
@@ -43,6 +43,7 @@ public class MoveTargetState : FSMBase
 
     public override void EnterState()
     {
+        minimi.agent.speed = Random.Range(minimi.speedMin, minimi.speedMax);
         minimi.agent.SetDestination(minimi.targetPos);
     }
     public override void ExitState()
@@ -70,16 +71,18 @@ public class MoveFreeState : FSMBase
     public override void UpdateState() { }
 }
 
-
 public class Minimi_Control : MonoBehaviour
 {
-    public float updateIntervalLeft;      // 목표지점 변경 주기
-    public float updateIntervalRight;     
+    [Header("User Settings")]
+    public float updateIntervalMin;      // 목표지점 변경 주기
+    public float updateIntervalMax;     
     public float updateDistance;          // 목표지점 변경 범위
+    public float speedMin;                // 이동속도 범위
+    public float speedMax;
+    [Header("Not User Settings")]
     public Vector3 targetPos;
 
     public NavMeshAgent agent;
-    public Vector2 mousePos;
     public float remainUpdateTime;        // 목표지점 갱신까지 남은 시간
 
     SkeletonAnimation skAnim;
@@ -131,13 +134,6 @@ public class Minimi_Control : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            //ChangeRandomAnim();
-            //mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            //agent.SetDestination(mousePos);
-        }
-
         if (IsMoveTarget || IsMoveFree)
         {
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
