@@ -4,11 +4,9 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
 using Spine;
-using Unity.VisualScripting;
 
 public class Minimi_Spawner : MonoBehaviour
 {
-    public List<string> minimiNames;      // 생성할 사도 이름들
     public string[] exceptAnimationNames; // 제외할 애니메이션
     public GameObject minimiPrefab;
     public GameObject minimiSpawnPointParent;
@@ -19,6 +17,9 @@ public class Minimi_Spawner : MonoBehaviour
     public static List<string> animationNames;
     List<Vector3> spawnPoints;
     List<Vector3> centerPoints;
+
+    Queue<string> shuffledSkinsOrder;
+    public bool isOuter = true;
 
     void Start()
     {
@@ -48,27 +49,48 @@ public class Minimi_Spawner : MonoBehaviour
 
         // 사도 생성
         List<string> skins = SystemManager.Instance.settings.selectedSkins.ToList();
-        List<string> shuffledSkins = skins.OrderBy(s => Random.value).ToList();
+        shuffledSkinsOrder = new Queue<string>(skins.OrderBy(s => Random.value));
+
         int minimiNum = SystemManager.Instance.settings.minimiNum;
-        foreach (string skin in shuffledSkins.Take(minimiNum).ToList())
+        if (minimiNum > skins.Count)
         {
-            minimiNames.Add(skin);
+            minimiNum = skins.Count;
+            isOuter = false;
         }
-        foreach (string name in minimiNames)
+
+        for (int i=0; i<minimiNum; i++)
         {
-            Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-            GameObject minimi = Instantiate(minimiPrefab, spawnPoint, Quaternion.identity, minimiParent.transform);
-            minimi.name = name;
-
-            SkeletonAnimation skAnim = minimi.GetComponent<SkeletonAnimation>();
-            skAnim.Skeleton.SetSkin(name);
-
-            Minimi_Control control = minimi.GetComponent<Minimi_Control>();
-            control.ChangeRandomAnim();
-            Vector3 centerPoint = centerPoints[Random.Range(0, centerPoints.Count)];
-            control.targetPos = GetRandomPosOnNavMesh(centerPoint, 0.5f);
-            control.ChangeState<MoveTargetState>();
+            GameObject minimi = Instantiate(minimiPrefab, minimiParent.transform);
+            minimi.GetComponent<Minimi_Control>().spawner = this;
+            RefreshMinimi(minimi);
         }
+    }
+
+    public void RefreshMinimi(GameObject minimi)
+    {
+        string name = shuffledSkinsOrder.Dequeue();
+        InitMinimi(minimi, name);
+        shuffledSkinsOrder.Enqueue(name);
+    }
+
+    void InitMinimi(GameObject minimi, string name)
+    {
+        minimi.transform.position = GetRandomSpawnPoint();
+        minimi.name = name;
+
+        SkeletonAnimation skAnim = minimi.GetComponent<SkeletonAnimation>();
+        skAnim.Skeleton.SetSkin(name);
+
+        Minimi_Control control = minimi.GetComponent<Minimi_Control>();
+        control.ChangeRandomAnim();
+        Vector3 centerPoint = centerPoints[Random.Range(0, centerPoints.Count)];
+        control.targetPos = GetRandomPosOnNavMesh(centerPoint, 0.5f);
+        control.ChangeState<MoveTargetState>();
+    }
+
+    public Vector3 GetRandomSpawnPoint()
+    {
+        return spawnPoints[Random.Range(0, spawnPoints.Count)];
     }
 
     public static Vector3 GetRandomPosOnNavMesh(Vector2 point, float range)

@@ -1,0 +1,5 @@
+1. 최신 버전이 있는 트릭컬에서 Android - data - files 폴더 복사
+2. 해당 폴더를 Asset Studio에서 읽기
+3. Minimi (Texture2D), Minimi.atlas (TextAsset), Minimi.skel (TextAssest) 추출
+4. 파일들의 확장자 변환 => atlas.txt, skel.bytes
+5. 유니티 프로젝트에 로드하여 사용

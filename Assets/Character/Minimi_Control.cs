@@ -67,6 +67,27 @@ public class MoveFreeState : FSMBase
         Vector3 randomPos = Minimi_Spawner.GetRandomPosOnNavMesh(minimi.transform.position, minimi.updateDistance);
         minimi.agent.SetDestination(randomPos);
     }
+    public override void ExitState()
+    {
+        if (minimi.spawner.isOuter)
+            minimi.remainFreeMove -= 1;
+    }
+    public override void UpdateState() { }
+}
+
+public class MoveOuterState : FSMBase
+{
+    readonly Minimi_Control minimi;
+
+    public MoveOuterState(Minimi_Control minimi)
+    {
+        this.minimi = minimi;
+    }
+
+    public override void EnterState()
+    {
+        minimi.agent.SetDestination(minimi.spawner.GetRandomSpawnPoint());
+    }
     public override void ExitState() { }
     public override void UpdateState() { }
 }
@@ -76,18 +97,20 @@ public class Minimi_Control : MonoBehaviour
     [Header("User Settings")]
     public float updateIntervalMin;      // 목표지점 변경 주기
     public float updateIntervalMax;     
-    public float updateDistance;          // 목표지점 변경 범위
-    public float speedMin;                // 이동속도 범위
+    public float updateDistance;         // 목표지점 변경 범위
+    public float speedMin;               // 이동속도 범위
     public float speedMax;
+    public int remainFreeMove;           // 나가기 전까지 남은 자유 이동 횟수
     [Header("Not User Settings")]
     public Vector3 targetPos;
 
     public NavMeshAgent agent;
-    public float remainUpdateTime;        // 목표지점 갱신까지 남은 시간
+    public float remainUpdateTime;       // 목표지점 갱신까지 남은 시간
 
     SkeletonAnimation skAnim;
     MeshRenderer meshRenderer;
     Vector3 initialScale;
+    public Minimi_Spawner spawner;
 
     FSMBase state;
     public bool IsIdle
@@ -109,6 +132,13 @@ public class Minimi_Control : MonoBehaviour
         get
         {
             return state.GetType() == typeof(MoveFreeState);
+        }
+    }
+    public bool IsMoveOuter
+    {
+        get
+        {
+            return state.GetType() == typeof(MoveOuterState);
         }
     }
 
@@ -134,33 +164,38 @@ public class Minimi_Control : MonoBehaviour
 
     void Update()
     {
-        if (IsMoveTarget || IsMoveFree)
+        if (IsIdle)
         {
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            if (remainUpdateTime <= 0)
             {
-                if (!IsIdle)
-                    ChangeState<IdleState>();
+                if (remainFreeMove <= 0 && spawner.isOuter)
+                    ChangeState<MoveOuterState>();
+                else
+                    ChangeState<MoveFreeState>();
             }
         }
-        else if (remainUpdateTime <= 0)
+        else if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            if (!IsMoveFree)
-                ChangeState<MoveFreeState>();
+            if (IsMoveTarget || IsMoveFree)
+            {
+                ChangeState<IdleState>();
+            }
+            else if (IsMoveOuter)
+            {
+                spawner.RefreshMinimi(gameObject);
+            }
         }
-        UpdateState();
+        state.UpdateState();
 
         // 이동 방향따라 반전
-        if (agent.velocity.x > 0)
+        float velocityThreshold = 0.01f; // 속도 임계값
+        if (agent.velocity.x > velocityThreshold)
             transform.localScale = new Vector3(-initialScale.x, initialScale.y, initialScale.z);
-        else if (agent.velocity.x < 0)
+        else if (agent.velocity.x < -velocityThreshold)
             transform.localScale = new Vector3(initialScale.x, initialScale.y, initialScale.z);
+
         // 순서 조절
         meshRenderer.sortingOrder = Mathf.RoundToInt(-transform.position.y * 100);
-    }
-
-    void UpdateState()
-    {
-        state.UpdateState();
     }
 
     public void ChangeState<T>() where T : FSMBase
