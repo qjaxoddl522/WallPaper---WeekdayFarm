@@ -11,11 +11,7 @@ public class TimeManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI ampm;
     [SerializeField] TextMeshProUGUI date;
     float timer = 1f;
-
-    void Start()
-    {
-        LayoutRebuilder.ForceRebuildLayoutImmediate(hourParent);
-    }
+    string prevHour;
 
     void Update()
     {
@@ -27,12 +23,19 @@ public class TimeManager : MonoBehaviour
             string currentHour = now.ToString("hh:mm");
             string currentAmpm = now.ToString("tt", new CultureInfo("en-US"));
             string currentDate = now.ToString("yyyy. MM. dd.");
-            hour.text = currentHour;
-            hour.transform.parent.GetComponent<TextMeshProUGUI>().text = currentHour;
-            ampm.text = currentAmpm;
-            ampm.transform.parent.GetComponent<TextMeshProUGUI>().text = currentAmpm;
-            date.text = currentDate;
-            date.transform.parent.GetComponent<TextMeshProUGUI>().text = currentDate;
+
+            if (prevHour == null || prevHour != currentHour)
+            {
+                prevHour = currentHour;
+
+                hour.text = currentHour;
+                hour.transform.parent.GetComponent<TextMeshProUGUI>().text = currentHour;
+                ampm.text = currentAmpm;
+                ampm.transform.parent.GetComponent<TextMeshProUGUI>().text = currentAmpm;
+                date.text = currentDate;
+                date.transform.parent.GetComponent<TextMeshProUGUI>().text = currentDate;
+                LayoutRebuilder.ForceRebuildLayoutImmediate(hourParent);
+            }
 
             timer = 0f; 
         }
