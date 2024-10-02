@@ -3417,7 +3417,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffed6487dab6ce94797170a7837976e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimiNames: []
   exceptAnimationNames:
   - success
   - fail
@@ -3428,6 +3427,9 @@ MonoBehaviour:
   minimiSpawnPointParent: {fileID: 1342964507}
   minimiCenterPointParent: {fileID: 749258611}
   minimiParent: {fileID: 1806569739}
+  freeMoveNumMin: 5
+  freeMoveNumMax: 20
+  isOuter: 1
 --- !u!1 &1888447773
 GameObject:
   m_ObjectHideFlags: 0

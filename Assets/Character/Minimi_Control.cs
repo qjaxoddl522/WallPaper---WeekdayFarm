@@ -15,20 +15,32 @@ public abstract class FSMBase
 public class IdleState : FSMBase
 {
     readonly Minimi_Control minimi;
+    bool isGetTargetPos;
 
     public IdleState(Minimi_Control minimi)
     {
         this.minimi = minimi;
+        this.isGetTargetPos = false;
     }
 
     public override void EnterState()
     {
         minimi.remainUpdateTime = Random.Range(minimi.updateIntervalMin, minimi.updateIntervalMax);
     }
-    public override void ExitState() { }
+    public override void ExitState()
+    {
+        if (minimi.spawner.isOuter)
+            minimi.remainFreeMove -= 1;
+    }
     public override void UpdateState()
     {
         minimi.remainUpdateTime -= Time.deltaTime;
+        if (!isGetTargetPos)
+        {
+            var result = minimi.spawner.GetRandomPosOnNavMesh(minimi.transform.position, minimi.updateDistance);
+            minimi.targetPos = result.pos;
+            isGetTargetPos = result.isSuccess;
+        }
     }
 }
 
@@ -43,34 +55,11 @@ public class MoveTargetState : FSMBase
 
     public override void EnterState()
     {
-        minimi.agent.speed = Random.Range(minimi.speedMin, minimi.speedMax);
         minimi.agent.SetDestination(minimi.targetPos);
     }
     public override void ExitState()
     {
         // Debug.Log("µµÂø");
-    }
-    public override void UpdateState() { }
-}
-
-public class MoveFreeState : FSMBase
-{
-    readonly Minimi_Control minimi;
-
-    public MoveFreeState(Minimi_Control minimi)
-    {
-        this.minimi = minimi;
-    }
-
-    public override void EnterState()
-    {
-        Vector3 randomPos = Minimi_Spawner.GetRandomPosOnNavMesh(minimi.transform.position, minimi.updateDistance);
-        minimi.agent.SetDestination(randomPos);
-    }
-    public override void ExitState()
-    {
-        if (minimi.spawner.isOuter)
-            minimi.remainFreeMove -= 1;
     }
     public override void UpdateState() { }
 }
@@ -127,13 +116,6 @@ public class Minimi_Control : MonoBehaviour
             return state.GetType() == typeof(MoveTargetState);
         }
     }
-    public bool IsMoveFree
-    {
-        get
-        {
-            return state.GetType() == typeof(MoveFreeState);
-        }
-    }
     public bool IsMoveOuter
     {
         get
@@ -153,6 +135,7 @@ public class Minimi_Control : MonoBehaviour
     {
         transform.rotation = Quaternion.identity;
 
+        agent.speed = Random.Range(speedMin, speedMax);
         agent.autoRepath = false;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -168,15 +151,15 @@ public class Minimi_Control : MonoBehaviour
         {
             if (remainUpdateTime <= 0)
             {
-                if (remainFreeMove <= 0 && spawner.isOuter)
+                if (spawner.isOuter && remainFreeMove <= 0)
                     ChangeState<MoveOuterState>();
                 else
-                    ChangeState<MoveFreeState>();
+                    ChangeState<MoveTargetState>();
             }
         }
         else if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            if (IsMoveTarget || IsMoveFree)
+            if (IsMoveTarget)
             {
                 ChangeState<IdleState>();
             }

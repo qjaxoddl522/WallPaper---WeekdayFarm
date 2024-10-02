@@ -53,7 +53,7 @@ MonoBehaviour:
   updateDistance: 5
   speedMin: 0.3
   speedMax: 0.6
-  remainFreeMove: 4
+  remainFreeMove: 0
   targetPos: {x: 0, y: 0, z: 0}
   agent: {fileID: 0}
   remainUpdateTime: 0

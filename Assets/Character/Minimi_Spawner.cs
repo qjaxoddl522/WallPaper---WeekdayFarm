@@ -12,6 +12,8 @@ public class Minimi_Spawner : MonoBehaviour
     public GameObject minimiSpawnPointParent;
     public GameObject minimiCenterPointParent;
     public GameObject minimiParent;
+    public int freeMoveNumMin;
+    public int freeMoveNumMax;
 
     SkeletonAnimation skAnim_Reading;
     public static List<string> animationNames;
@@ -84,7 +86,8 @@ public class Minimi_Spawner : MonoBehaviour
         Minimi_Control control = minimi.GetComponent<Minimi_Control>();
         control.ChangeRandomAnim();
         Vector3 centerPoint = centerPoints[Random.Range(0, centerPoints.Count)];
-        control.targetPos = GetRandomPosOnNavMesh(centerPoint, 0.5f);
+        control.targetPos = GetRandomPosOnNavMesh(centerPoint, 0.5f).pos;
+        control.remainFreeMove = Random.Range(freeMoveNumMin, freeMoveNumMax);
         control.ChangeState<MoveTargetState>();
     }
 
@@ -93,23 +96,25 @@ public class Minimi_Spawner : MonoBehaviour
         return spawnPoints[Random.Range(0, spawnPoints.Count)];
     }
 
-    public static Vector3 GetRandomPosOnNavMesh(Vector2 point, float range)
+    public (Vector3 pos, bool isSuccess) GetRandomPosOnNavMesh(Vector2 point, float range)
     {
-        // NavMesh 위의 랜덤 위치를 hit에 저장
-        NavMeshHit hit;
+        NavMeshHit hit = new NavMeshHit();
+        Vector2 randomDirection;
         int t = 0;
-        while (t < 30)
+        while (t < 10)
         {
-            Vector2 randomDirection = point + Random.insideUnitCircle * range;
+            randomDirection = point + Random.insideUnitCircle * range;
             if (NavMesh.SamplePosition(randomDirection, out hit, range, NavMesh.AllAreas))
             {
                 NavMeshHit edgeHit;
                 if (NavMesh.FindClosestEdge(hit.position, out edgeHit, NavMesh.AllAreas))
-                    if (edgeHit.distance > 0.1)
-                        return hit.position;
+                {
+                    if (edgeHit.distance > 0.01)
+                        return (hit.position, true);
+                }
             }
             t++;
         }
-        return point;
+        return (hit.position, false);
     }
 }
