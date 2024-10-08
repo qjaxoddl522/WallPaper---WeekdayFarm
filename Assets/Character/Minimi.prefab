@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: ff83a60788deb9f4f9b3f4be50bb5a52, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 3070fd0e92e8e904f942c4a56e8c92e2, type: 2}
   initialSkinName: Mini_Dummy
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
