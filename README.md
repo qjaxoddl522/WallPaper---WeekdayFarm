@@ -8,7 +8,7 @@ Wallpaper Engine용 트릭컬 평일농장 배경화면
 ![unnamed](https://github.com/user-attachments/assets/b1273554-6279-4eb7-a4ac-f612680a450b)
 
 ## ⏰ 개발 기간
-* 24.09.02. ~ 24.10.02. (이후 캐릭터 지속적으로 업데이트)
+* 24.09.02. ~ 24.10.02. (이후 사도 지속적으로 업데이트)
 
 ## ⚙️ 개발 환경
 * Unity6 (6000.0.12f1)
