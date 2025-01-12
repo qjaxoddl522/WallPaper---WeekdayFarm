@@ -2,6 +2,7 @@
 2. 해당 폴더를 Asset Studio에서 읽기
 3. Minimi (Texture2D), Minimi.atlas (TextAsset), Minimi.skel (TextAssest) 추출
 4. 파일들의 확장자 변환 => atlas.txt, skel.bytes
-5. 유니티 프로젝트에 로드하여 SystemManager와 Minimi 프리팹에 적용
+5. 반드시 세 파일을 한 번에 유니티 프로젝트에 로드하여 SystemManager와 Minimi 프리팹에 적용 + reload
 
 files\Packages\spine\minimi
+* 경고문 발생 시 Minimi.png의 sRGB 비활성화
